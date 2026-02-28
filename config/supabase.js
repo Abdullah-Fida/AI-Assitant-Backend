@@ -1,10 +1,8 @@
-// Add this TEMPORARY debug code at the TOP of your index.js
-console.log('🔍 ENV CHECK:');
-console.log('SUPABASE_URL:', process.env.SUPABASE_URL ? '✅ EXISTS' : '❌ MISSING');
-console.log('SUPABASE_KEY:', process.env.SUPABASE_KEY ? '✅ EXISTS' : '❌ MISSING');
+const { createClient } = require('@supabase/supabase-js');
 
-// If missing, crash with clear message
-if (!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
-    console.error('❌ CRITICAL: Environment variables missing!');
-    throw new Error('Missing Supabase environment variables');
-}
+const supabaseUrl = 'https://kkkszbjdwzipujvmmcbd.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtra3N6Ympkd3ppcHVqdm1tY2JkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDIxMTY4MywiZXhwIjoyMDg1Nzg3NjgzfQ.QfBevNvjExXsvCy3DpULiU4iyaLYlv_eRKjHtivfqQw';
+
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+module.exports = supabase; 
