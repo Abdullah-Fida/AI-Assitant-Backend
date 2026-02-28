@@ -10,30 +10,49 @@ app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
-// Use routes with /api prefix
-app.use('/api', routes);
+// ✅ ADD THIS TEST ENDPOINT AT THE VERY TOP (before any other routes)
+app.get('/ping', (req, res) => {
+    res.status(200).json({ 
+        message: 'pong', 
+        time: new Date().toISOString(),
+        env: process.env.NODE_ENV 
+    });
+});
+
+// Handle favicon.ico
+app.get('/favicon.ico', (req, res) => res.status(204).end());
 
 // Root route
 app.get('/', (req, res) => {
     res.send(`
         <h1>Backend Server is Running on Vercel</h1>
         <p>The Agency Product API is active</p>
-        <p>API Base: <a href="/api">/api</a></p>
+        <p>Test: <a href="/ping">/ping</a></p>
+        <p>API Test: <a href="/api/test">/api/test</a></p>
     `);
 });
 
-// Simple test route
+// Test route
 app.get('/api/test', (req, res) => {
     res.json({ message: "API is working on Vercel!" });
 });
 
-// Only start the server if running directly (not on Vercel)
-if (process.env.NODE_ENV !== 'production' && require.main === module) {
-    const port = process.env.PORT || 3000;
-    app.listen(port, () => {
-        console.log("✅ Server started on port " + port);
-        console.log("📡 API Base URL: http://localhost:" + port + "/api");
+// Use routes with /api prefix
+app.use('/api', routes);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error('🔥 Express error:', err);
+    res.status(500).json({ 
+        error: 'Internal Server Error', 
+        message: err.message,
+        stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
     });
-}
+});
+
+// 404 handler
+app.use('*', (req, res) => {
+    res.status(404).json({ error: 'Route not found', path: req.originalUrl });
+});
 
 module.exports = app;
